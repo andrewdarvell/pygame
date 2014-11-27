@@ -9,17 +9,21 @@ HEIGHT = 64
 JUMP_POWER = 10
 MOVE_SPEED = 5
 GRAVITY = 0.35 # Сила, которая будет
-COLOR = "#888888"
+COLOR = "#1df1f9"
 
 
 
 ANIMATION_DELAY = 0.1 # скорость смены кадров
 ANIMATION_LEFT = [('heisenberg/heisenberg_l.png')]
 ANIMATION_RIGHT = [('heisenberg/heisenberg_r.png')]
-ANIMATION_STAY = [('heisenberg/heisenberg_r.png', 0.1)]
-ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_r.png', 0.1)]
-ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
-ANIMATION_JUMP = [('heisenberg/heisenberg_r.png', 0.1)]
+
+ANIMATION_STAY_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
+ANIMATION_STAY_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
+
+ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_jump_l.png', 0.1)]
+ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_jump_r.png', 0.1)]
+
+ANIMATION_JUMP = [('heisenberg/heisenberg_jump_r.png', 0.1)]
 
 class Heisenberg(sprite.Sprite):
     def __init__(self, x, y):
@@ -28,11 +32,12 @@ class Heisenberg(sprite.Sprite):
         self.yvel = 0 # скорость вертикального перемещения
         self.onGround = False # На земле ли я?
         self.rect = Rect(x, y, WIDTH, HEIGHT) # прямоугольный объект
-        self.image = Surface((WIDTH,HEIGHT))
-        self.image.fill(Color(COLOR))
+        self.image = Surface((WIDTH, HEIGHT))
+        # self.image.fill(Color(COLOR<))
+
+        self.face_right = True
+
         self.image.set_colorkey(Color(COLOR))
-
-
         boltAnim = []
         for anim in ANIMATION_RIGHT:
             boltAnim.append((anim, ANIMATION_DELAY))
@@ -45,9 +50,13 @@ class Heisenberg(sprite.Sprite):
         self.boltAnimLeft = pyganim.PygAnimation(boltAnim)
         self.boltAnimLeft.play()
 
-        self.boltAnimStay = pyganim.PygAnimation(ANIMATION_STAY)
-        self.boltAnimStay.play()
-        self.boltAnimStay.blit(self.image, (0, 0)) # По-умолчанию, стоим
+        self.boltAnimStayRight = pyganim.PygAnimation(ANIMATION_STAY_RIGHT)
+        self.boltAnimStayRight.play()
+        self.boltAnimStayRight.blit(self.image, (0, 0)) # По-умолчанию, стоим
+
+        self.boltAnimStayLeft = pyganim.PygAnimation(ANIMATION_STAY_LEFT)
+        self.boltAnimStayLeft.play()
+        self.boltAnimStayLeft.blit(self.image, (0, 0)) # По-умолчанию, стоим
 
         self.boltAnimJumpLeft= pyganim.PygAnimation(ANIMATION_JUMP_LEFT)
         self.boltAnimJumpLeft.play()
@@ -55,7 +64,7 @@ class Heisenberg(sprite.Sprite):
         self.boltAnimJumpRight= pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
         self.boltAnimJumpRight.play()
 
-        self.boltAnimJump= pyganim.PygAnimation(ANIMATION_JUMP)
+        self.boltAnimJump= pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
         self.boltAnimJump.play()
 
 
@@ -78,21 +87,24 @@ class Heisenberg(sprite.Sprite):
                     self.yvel = 0                 # и энергия прыжка пропадает
 
     def update(self,  left, right, up, platforms):
+        self.image.fill(Color(COLOR))
         if up:
             if self.onGround: # прыгаем, только когда можем оттолкнуться от земли
                 self.yvel = -JUMP_POWER
-                self.image.fill(Color(COLOR))
-                self.boltAnimJump.blit(self.image, (0, 0))
+            self.image.fill(Color(COLOR))
+            self.boltAnimJump.blit(self.image, (0, 0))
 
         if left:
+            self.face_right = False
             self.xvel = -MOVE_SPEED # Лево = x- n
             self.image.fill(Color(COLOR))
             if not up: # и не прыгаем
-                self.boltAnimLeft.blit(self.image, (0, 0)) # отображаем анимацию движения
-            if up: # если же прыгаем
-                self.boltAnimJumpLeft.blit(self.image, (0, 0)) # отображаем анимацию прыжка
+                self.boltAnimLeft.blit(self.image, (0, 0))  # отображаем анимацию движения
+            if up:  # если же прыгаем
+                self.boltAnimJumpLeft.blit(self.image, (0, 0))  # отображаем анимацию прыжка
 
         if right:
+            self.face_right = True
             self.xvel = MOVE_SPEED # Право = x + n
             self.image.fill(Color(COLOR))
             if not up:
@@ -104,7 +116,10 @@ class Heisenberg(sprite.Sprite):
             self.xvel = 0
             if not up:
                 self.image.fill(Color(COLOR))
-                self.boltAnimStay.blit(self.image, (0, 0))
+                if self.face_right:
+                    self.boltAnimStayRight.blit(self.image, (0, 0))
+                else:
+                    self.boltAnimStayLeft.blit(self.image, (0, 0))
 
         if not self.onGround:
             self.yvel += GRAVITY

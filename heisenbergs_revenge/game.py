@@ -115,10 +115,10 @@ def main():
             if e.type == KEYDOWN and e.key == K_LEFT:
                 left = True
             if e.type == KEYDOWN and e.key == K_RIGHT:
-               right = True
+                right = True
 
             if e.type == KEYUP and e.key == K_RIGHT:
-               right = False
+                right = False
             if e.type == KEYUP and e.key == K_LEFT:
                 left = False
 
