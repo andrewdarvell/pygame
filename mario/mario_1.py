@@ -65,7 +65,7 @@ def main():
     animatedEntities.add(tp)
 
 
-    mn = Monster(190,200,2,3,150,15)
+    mn = Monster(190, 200, 2, 3, 150, 15)
     entities.add(mn)
     platforms.append(mn)
     monsters.add(mn)
