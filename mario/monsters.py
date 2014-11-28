@@ -15,7 +15,7 @@ ANIMATION_MONSTERHORYSONTAL = [('%s/monsters/fire1.png' % ICON_DIR),
                       ('%s/monsters/fire2.png' % ICON_DIR )]
 
 class Monster(sprite.Sprite):
-    def __init__(self, x, y, left, up, maxLengthLeft,maxLengthUp):
+    def __init__(self, x, y, left, up, maxLengthLeft, maxLengthUp):
         sprite.Sprite.__init__(self)
         self.image = Surface((MONSTER_WIDTH, MONSTER_HEIGHT))
         self.image.fill(Color(MONSTER_COLOR))

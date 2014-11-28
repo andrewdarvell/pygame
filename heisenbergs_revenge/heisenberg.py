@@ -20,9 +20,12 @@ ANIMATION_RIGHT = [('heisenberg/heisenberg_r.png')]
 ANIMATION_STAY_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
 ANIMATION_STAY_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
 
-ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_jump_l.png', 0.1)]
-ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_jump_r.png', 0.1)]
+# ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_jump_l.png', 0.1)]
+ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
+# ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_jump_r.png', 0.1)]
+ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
 
+# ANIMATION_JUMP = [('heisenberg/heisenberg_jump_r.png', 0.1)]
 ANIMATION_JUMP = [('heisenberg/heisenberg_jump_r.png', 0.1)]
 
 class Heisenberg(sprite.Sprite):
@@ -130,3 +133,12 @@ class Heisenberg(sprite.Sprite):
 
         self.rect.x += self.xvel # переносим свои положение на xvel
         self.collide(self.xvel, 0, platforms)
+
+    def get_xy(self):
+        return {'x': self.rect.x, 'y': self.rect.y}
+
+    def get_direction(self):
+        if self.face_right:
+            return 1
+        else:
+            return -1

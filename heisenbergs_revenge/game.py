@@ -2,6 +2,7 @@
 
 import pygame
 import heisenberg
+import bullets
 from pygame import *
 from blocks import *
 
@@ -132,19 +133,37 @@ def main():
             if e.type == KEYUP and e.key == K_LSHIFT:
                 running = False
 
+            if e.type == KEYUP and e.key == K_e:
+                coords = hero.get_xy()
+                # coords = {'x':164, 'y':512}
+                bullet = bullets.GunBullet(coords, hero.get_direction())
+                bullets_g.add(bullet)
+
+
         for sprite_layer in sprite_layers: # перебираем все слои
             if not sprite_layer.is_object_group: # и если это не слой объектов
                 renderer.render_layer(screen, sprite_layer) # отображаем его
+
         for e in entities:
             screen.blit(e.image, camera.apply(e))
+
+        for bullet in bullets_g:
+            if bullet.get_status():
+                screen.blit(bullet.image, camera.apply(bullet))
+
         center_offset = camera.reverse(CENTER_OF_SCREEN)
         camera.update(hero)
+        bullets_g.update(platforms)
+
+
         renderer.set_camera_position_and_size(center_offset[0], center_offset[1], WIN_WIDTH, WIN_HEIGHT, "center")
         hero.update(left, right, up, platforms) # передвижение
+
         pygame.display.update()     # обновление и вывод всех изменений на экран
         screen.blit(bg, (0, 0))      # Каждую итерацию необход
 
 entities = pygame.sprite.Group() # Все объекты
+bullets_g = pygame.sprite.Group()
 platforms = []
 if __name__ == "__main__":
     main()
