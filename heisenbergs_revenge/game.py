@@ -1,5 +1,7 @@
 # coding=utf-8
 
+import math
+
 import pygame
 import heisenberg
 import bullets
@@ -150,7 +152,9 @@ def main():
         for bullet in bullets_g:
             if bullet.get_status():
                 screen.blit(bullet.image, camera.apply(bullet))
-
+        # coords = hero.get_xy()
+        # path = math.sqrt(math.pow((playerX-coords.get('x')), 2)+math.pow(playerY-coords.get('y'), 2))
+        # print path
         center_offset = camera.reverse(CENTER_OF_SCREEN)
         camera.update(hero)
         bullets_g.update(platforms)
