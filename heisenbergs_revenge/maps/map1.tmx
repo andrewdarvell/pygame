@@ -19,7 +19,7 @@
  </layer>
  <layer name="Platforms" width="100" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt1ksOwCAIQEG9/6W7ckNspLQi0DcJWyMfS1sDAADAX/XTFwAAIDH2qB9NrbsI7PNlfWXf6N1z2WpWvddV88pK9qP6/EW3s+5vz57to9mZlWbHmstdrU7sc/oRS4UcBs8ZXr0h63ujH7FUyGHQfusj/3NFvZeFdi8TPoFYLko8AKw=
+   eJztmNsOAyEIROv//3TTpH1TkdvsSDkJbysgs3gbr4aF8bWGg9aDi9aDi8p67ObGOu9ZXuPAtP4tYyPY6cGItUbWOnvroB2/yq2aHrfEW8W8ab1CxESz0oSNf9HjFzdDk8i9EalH1BnBm8Msp9l3GovM78Qfol4IXdj3do0eiH8507/UCwxk9ZtHuyzdd/6q6oHAqpekB0MdWPLIQtOrDLWQ3ksqgHw/8ILYn73jT/akp+sYhUcP9NlcyqUCVdalCnP4wHA/l7499R2F9m7+xP2cnYg5MNTitvPgCta8tFh6sy3XGi7evZABNw==
   </data>
  </layer>
  <objectgroup name="Monsters" width="100" height="25">

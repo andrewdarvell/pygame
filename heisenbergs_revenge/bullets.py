@@ -4,6 +4,7 @@ __author__ = 'darvell'
 from pygame import *
 import pyganim
 import enemies
+import heisenberg
 import blocks
 
 GUNBULLET_WIDTH = 32
@@ -16,7 +17,7 @@ GUNBULLET_DIST = 500
 GUNBULLET_ANIMATION = [('blocks/sand1.png', 0.1)]
 
 class GunBullet(sprite.Sprite):
-    def __init__(self, coords, direction):
+    def __init__(self, coords, direction, player):
         sprite.Sprite.__init__(self)
         x = coords['x']
         y = coords['y']
@@ -29,6 +30,7 @@ class GunBullet(sprite.Sprite):
         self.yvel = 0
         self.direction = direction
         self.dist = 0
+        self.from_player = player
 
         self.boltAnim = pyganim.PygAnimation(GUNBULLET_ANIMATION)
         self.boltAnim.play()
@@ -58,30 +60,26 @@ class GunBullet(sprite.Sprite):
     def collide(self, xvel, yvel, colliders):
         for c in colliders:
             if sprite.collide_rect(self, c): # если есть пересечение платформы с игроком
-                if isinstance(c, enemies.Bandit) or isinstance(c, blocks.Platform_sand):
-                    if isinstance(c, enemies.Bandit):
-                        c.set_hit()
-                    if xvel > 0:                      # если движется вправо
-                        self.rect.right = c.rect.left # то не движется вправо
-                        self.is_alive = False
+                if isinstance(c, enemies.Bandit) and self.from_player:
+                    self.xvel = 0
+                    self.yvel = 0
+                    self.is_alive = False
+                    c.set_hit()
 
-                    if xvel < 0:                      # если движется влево
-                        self.rect.left = c.rect.right # то не движется влево
-                        self.is_alive = False
+                if isinstance(c, heisenberg.Heisenberg) and not self.from_player:
+                    self.xvel = 0
+                    self.yvel = 0
+                    self.is_alive = False
+                    print 'Head shot!!!'
 
-                    if yvel > 0:                      # если падает вниз
-                        self.rect.bottom = c.rect.top # то не падает вниз
-                        self.onGround = True          # и становится на что-то твердое
-                        self.yvel = 0                 # и энергия падения пропадает
-                        self.is_alive = False
-
-                    if yvel < 0:                      # если движется вверх
-                        self.rect.top = c.rect.bottom # то не движется вверх
-                        self.yvel = 0
-                        self.is_alive = False
+                if isinstance(c, blocks.Platform_sand):
+                    self.xvel = 0
+                    self.yvel = 0
+                    self.is_alive = False
 
     def get_status(self):
         return self.is_alive
 
     def set_not_alive(self):
+        print 'set not alive bullet'
         self.is_alive = True

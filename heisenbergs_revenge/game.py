@@ -14,8 +14,8 @@ import tiledtmxloader
 import helperspygame # Преобразует tmx карты в формат  спрайтов pygame
 
 
-WIN_WIDTH = 800  # Ширина создаваемого окна
-WIN_HEIGHT = 640  # Высота окна
+WIN_WIDTH = 1200  # Ширина создаваемого окна
+WIN_HEIGHT = 800  # Высота окна
 DISPLAY = (WIN_WIDTH, WIN_HEIGHT)  # Группируем ширину и высоту в одну переменную
 BACKGROUND_COLOR = "#1df1f9"
 CENTER_OF_SCREEN = WIN_WIDTH / 2, WIN_HEIGHT / 2
@@ -92,9 +92,9 @@ def main():
 
     bandit1 = enemies.Bandit(500, 640)
     monsters.add(bandit1)
-    bandit2 = enemies.Bandit(550, 640)
+    bandit2 = enemies.Bandit(800, 640)
     monsters.add(bandit2)
-    bandit3 = enemies.Bandit(600, 640)
+    bandit3 = enemies.Bandit(2000, 640)
     monsters.add(bandit3)
     # entities.add(bandit1)
     all_objects.add(monsters)
@@ -147,8 +147,9 @@ def main():
 
             if e.type == KEYUP and e.key == K_e:
                 coords = hero.get_xy()
+                # print coords
                 # coords = {'x':164, 'y':512}
-                bullet = bullets.GunBullet(coords, hero.get_direction())
+                bullet = bullets.GunBullet(coords, hero.get_direction(), True)
                 bullets_g.add(bullet)
                 all_objects.add(bullet)
 
@@ -167,10 +168,20 @@ def main():
         for monster in monsters:
             if monster.get_status():
                 screen.blit(monster.image, camera.apply(monster))
+                if monster.get_nbullet():
+                    if isinstance(monster, enemies.Bandit):
+                        # coords = hero.get_xy()
+                        coords = monster.get_xy()
+                        # print coords
+                        bullet = bullets.GunBullet(coords, monster.get_direction(), False)
+                        bullets_g.add(bullet)
+                        all_objects.add(bullet)
+                        monster.set_ndullet(False)
 
         # coords = hero.get_xy()
         # path = math.sqrt(math.pow((playerX-coords.get('x')), 2)+math.pow(playerY-coords.get('y'), 2))
         # print path
+
         center_offset = camera.reverse(CENTER_OF_SCREEN)
         camera.update(hero)
         bullets_g.update(all_objects)

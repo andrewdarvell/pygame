@@ -13,6 +13,7 @@ JUMP_POWER = 10
 MOVE_SPEED = 3
 GRAVITY = 0.35 # Сила, которая будет
 COLOR = "#1df1f9"
+RELOAD_TIME = 100
 
 ANIMATION_DELAY = 0.1 # скорость смены кадров
 ANIMATION_LEFT = [('heisenberg/heisenberg_l.png')]
@@ -40,6 +41,11 @@ class Bandit(sprite.Sprite):
         self.image.set_colorkey(Color(COLOR))
         self.is_alive = True
         self.lifes = 3
+        self.brake = 0
+        self.no_path = False
+        self.need_bullet = False
+        self.direction = 0
+        self.reload = RELOAD_TIME
 
         boltAnim = []
         for anim in ANIMATION_RIGHT:
@@ -76,11 +82,13 @@ class Bandit(sprite.Sprite):
                 if isinstance(p, blocks.Platform_sand):
                     if xvel > 0:                      # если движется вправо
                         self.rect.right = p.rect.left # то не движется вправо
-                        self.yvel = -10
+                        # self.yvel = -10
+                        self.no_path = True
 
                     if xvel < 0:                      # если движется влево
                         self.rect.left = p.rect.right # то не движется влево
-                        self.yvel = -10
+                        # self.yvel = -10
+                        self.no_path = True
 
                     if yvel > 0:                      # если падает вниз
                         self.rect.bottom = p.rect.top # то не падает вниз
@@ -91,9 +99,8 @@ class Bandit(sprite.Sprite):
                         self.rect.top = p.rect.bottom # то не движется вверх
                         self.yvel = 0
 
-
     def update(self,  heis_coord, objects):
-        if self.is_alive:
+        if self.is_alive and self.brake == 0:
             self.image.fill(Color(COLOR))
             heisx = heis_coord.get('x')
             heisy = heis_coord.get('y')
@@ -114,26 +121,40 @@ class Bandit(sprite.Sprite):
             self.collide(0, self.yvel, objects)
 
 
-            if (path >= 50) and (path <300):
+            if (path >= 50) and (path <500):
                 if heisx < self.rect.x:
                     directx = -1
                     self.boltAnimLeft.blit(self.image, (0, 0))
+                    self.direction = -1
                 elif heisx > self.rect.x:
                     directx = 1
                     self.boltAnimRight.blit(self.image, (0, 0))
+                    self.direction = 1
                 elif heisx == self.rect.x:
-                    directx = 0
+                    # directx = 0
                     self.boltAnimRight.blit(self.image, (0, 0))
+
+                if self.reload == 0:
+                    self.need_bullet = True
+                    self.reload = RELOAD_TIME
+                    print self.reload
+                elif self.reload > 0:
+                    self.reload -= 1
 
                 self.xvel = MOVE_SPEED * directx
                 self.rect.x += self.xvel
                 self.collide(self.xvel, 0, objects)
+
+                pathy = math.fabs(heisy - self.rect.y)
+                if (heisy < self.rect.y) and self.onGround and (pathy > 100):
+                    self.jump()
+                if self.onGround and self.no_path:
+                    self.jump()
+                    self.no_path = False
             else:
                 self.boltAnimRight.blit(self.image, (0, 0))
-
-            pathy = math.fabs(heisy - self.rect.y)
-            if (heisy < self.rect.y) and (self.onGround) and (pathy > 100):
-                self.jump()
+        else:
+            self.brake -= 1
 
     def get_status(self):
         return self.is_alive
@@ -146,6 +167,20 @@ class Bandit(sprite.Sprite):
             if self.lifes > 1:
                 self.lifes -= 1
                 print 'Hit enemy!!!!'
+                self.brake = 50
             else:
                 self.is_alive = False
                 print 'Enemy down!!'
+
+    def get_xy(self):
+        return {'x': self.rect.x, 'y': self.rect.y}
+
+    def get_nbullet(self):
+        return self.need_bullet
+
+    def set_ndullet(self, value):
+        self.need_bullet = value
+        print 'Need bullet False!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+
+    def get_direction(self):
+        return self.direction
