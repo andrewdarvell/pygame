@@ -9,7 +9,7 @@ import blocks
 
 WIDTH = 32
 HEIGHT = 64
-JUMP_POWER = 10
+JUMP_POWER = 15
 MOVE_SPEED = 3
 GRAVITY = 0.35 # Сила, которая будет
 COLOR = "#1df1f9"

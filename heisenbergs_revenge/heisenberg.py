@@ -14,16 +14,23 @@ COLOR = "#1df1f9"
 
 
 ANIMATION_DELAY = 0.1 # скорость смены кадров
-ANIMATION_LEFT = [('heisenberg/heisenberg_l.png')]
-ANIMATION_RIGHT = [('heisenberg/heisenberg_r.png')]
+ANIMATION_LEFT = [('heisenberg/heisenberg_l.png'),
+                  ('heisenberg/heisenberg_l_1.png'),
+                  ('heisenberg/heisenberg_l.png'),
+                  ('heisenberg/heisenberg_l_2.png'),]
+
+ANIMATION_RIGHT = [('heisenberg/heisenberg_r.png'),
+                   ('heisenberg/heisenberg_r_1.png'),
+                   ('heisenberg/heisenberg_r.png'),
+                   ('heisenberg/heisenberg_r_2.png'),]
 
 ANIMATION_STAY_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
 ANIMATION_STAY_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
 
-# ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_jump_l.png', 0.1)]
-ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
-# ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_jump_r.png', 0.1)]
-ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
+ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_l_jump.png', 0.1)]
+# ANIMATION_JUMP_LEFT = [('heisenberg/heisenberg_l.png', 0.1)]
+ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_r_jump.png', 0.1)]
+# ANIMATION_JUMP_RIGHT = [('heisenberg/heisenberg_r.png', 0.1)]
 
 # ANIMATION_JUMP = [('heisenberg/heisenberg_jump_r.png', 0.1)]
 ANIMATION_JUMP = [('heisenberg/heisenberg_jump_r.png', 0.1)]

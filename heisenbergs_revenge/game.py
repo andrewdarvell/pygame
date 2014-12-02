@@ -90,13 +90,22 @@ def main():
     renderer = helperspygame.RendererPygame() # визуализатор
     bg.fill(Color(BACKGROUND_COLOR))
 
+    pygame.mixer.init()
+    pygame.mixer.music.load('music/main_music.mp3')
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play()
+
+    # channelA = pygame.mixer.Channel(2)
+
+    gun_sound = pygame.mixer.Sound('music/gun.ogg')
+    gun_sound.set_volume(0.5)
+
     bandit1 = enemies.Bandit(500, 640)
     monsters.add(bandit1)
     bandit2 = enemies.Bandit(800, 640)
     monsters.add(bandit2)
     bandit3 = enemies.Bandit(2000, 640)
     monsters.add(bandit3)
-    # entities.add(bandit1)
     all_objects.add(monsters)
 
     timer = pygame.time.Clock()
@@ -146,12 +155,25 @@ def main():
                 running = False
 
             if e.type == KEYUP and e.key == K_e:
+                # pygame.mixer.music.load('music/gun.mp3')
+                # pygame.mixer.music.set_volume(1)
+                # pygame.mixer.music.play()
+                # pygame.mixer.Sound.play(gun_sound)
+
+                gun_sound.play()
+                # channelA.play(gun_sound)
                 coords = hero.get_xy()
+                coords['y'] += 30
+                if hero.get_direction() < 0:
+                    coords['x'] -= 5
+                else:
+                    coords['x'] += 30
                 # print coords
                 # coords = {'x':164, 'y':512}
                 bullet = bullets.GunBullet(coords, hero.get_direction(), True)
                 bullets_g.add(bullet)
                 all_objects.add(bullet)
+
 
 
         for sprite_layer in sprite_layers: # перебираем все слои
@@ -170,9 +192,8 @@ def main():
                 screen.blit(monster.image, camera.apply(monster))
                 if monster.get_nbullet():
                     if isinstance(monster, enemies.Bandit):
-                        # coords = hero.get_xy()
+                        gun_sound.play()
                         coords = monster.get_xy()
-                        # print coords
                         bullet = bullets.GunBullet(coords, monster.get_direction(), False)
                         bullets_g.add(bullet)
                         all_objects.add(bullet)

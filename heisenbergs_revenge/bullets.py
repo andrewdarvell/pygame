@@ -7,14 +7,15 @@ import enemies
 import heisenberg
 import blocks
 
-GUNBULLET_WIDTH = 32
-GUNBULLET_HEIGHT = 32
+GUNBULLET_WIDTH = 5
+GUNBULLET_HEIGHT = 3
 
 COLOR = "#1df1f9"
 GUNBULLET_SPEED = 10
 GUNBULLET_DIST = 500
 
-GUNBULLET_ANIMATION = [('blocks/sand1.png', 0.1)]
+GUNBULLET_ANIMATION_RIGHT = [('bullets/bullet_r.png', 0.1)]
+GUNBULLET_ANIMATION_LEFT = [('bullets/bullet_l.png', 0.1)]
 
 class GunBullet(sprite.Sprite):
     def __init__(self, coords, direction, player):
@@ -32,8 +33,11 @@ class GunBullet(sprite.Sprite):
         self.dist = 0
         self.from_player = player
 
-        self.boltAnim = pyganim.PygAnimation(GUNBULLET_ANIMATION)
-        self.boltAnim.play()
+        self.boltAnimRight = pyganim.PygAnimation(GUNBULLET_ANIMATION_RIGHT)
+        self.boltAnimRight.play()
+
+        self.boltAnimLeft = pyganim.PygAnimation(GUNBULLET_ANIMATION_LEFT)
+        self.boltAnimLeft.play()
 
         print u'NEW BULLET'
 
@@ -48,12 +52,16 @@ class GunBullet(sprite.Sprite):
             self.collide(0, self.rect.x + self.xvel, colliders)
             self.rect.x += self.xvel
 
+
             self.dist += GUNBULLET_SPEED
 
             self.collide(self.rect.y + self.yvel, 0, colliders)
             self.rect.y += self.yvel
 
-            self.boltAnim.blit(self.image, (0, 0))
+            if self.direction > 0:
+                self.boltAnimRight.blit(self.image, (0, 0))
+            else:
+                self.boltAnimLeft.blit(self.image, (0, 0))
             if self.dist >= GUNBULLET_DIST:
                 self.is_alive = False
 
@@ -61,10 +69,11 @@ class GunBullet(sprite.Sprite):
         for c in colliders:
             if sprite.collide_rect(self, c): # если есть пересечение платформы с игроком
                 if isinstance(c, enemies.Bandit) and self.from_player:
-                    self.xvel = 0
-                    self.yvel = 0
-                    self.is_alive = False
-                    c.set_hit()
+                    if c.get_status():
+                        self.xvel = 0
+                        self.yvel = 0
+                        self.is_alive = False
+                        c.set_hit()
 
                 if isinstance(c, heisenberg.Heisenberg) and not self.from_player:
                     self.xvel = 0
