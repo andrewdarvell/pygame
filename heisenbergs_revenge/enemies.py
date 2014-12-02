@@ -4,11 +4,13 @@ __author__ = 'darvell'
 from pygame import *
 import pyganim
 import math
+import bullets
+import blocks
 
 WIDTH = 32
 HEIGHT = 64
 JUMP_POWER = 10
-MOVE_SPEED = 5
+MOVE_SPEED = 3
 GRAVITY = 0.35 # Сила, которая будет
 COLOR = "#1df1f9"
 
@@ -35,7 +37,15 @@ class Bandit(sprite.Sprite):
         self.onGround = False
         self.rect = Rect(x, y, WIDTH, HEIGHT)
         self.image = Surface((WIDTH, HEIGHT))
+        self.image.set_colorkey(Color(COLOR))
+        self.is_alive = True
+        self.lifes = 3
 
+        boltAnim = []
+        for anim in ANIMATION_RIGHT:
+            boltAnim.append((anim, ANIMATION_DELAY))
+        self.boltAnimRight = pyganim.PygAnimation(boltAnim)
+        self.boltAnimRight.play()
 
         boltAnim = []
         for anim in ANIMATION_LEFT:
@@ -60,23 +70,82 @@ class Bandit(sprite.Sprite):
         self.boltAnimJump= pyganim.PygAnimation(ANIMATION_JUMP_RIGHT)
         self.boltAnimJump.play()
 
-    def collide(self, xvel, yvel, platforms):
-        for p in platforms:
-            if sprite.collide_rect(self, p): # если есть пересечение платформы с игроком
-                if xvel > 0:                      # если движется вправо
-                    self.rect.right = p.rect.left # то не движется вправо
+    def collide(self, xvel, yvel, objects):
+        for p in objects:
+            if sprite.collide_rect(self, p):
+                if isinstance(p, blocks.Platform_sand):
+                    if xvel > 0:                      # если движется вправо
+                        self.rect.right = p.rect.left # то не движется вправо
+                        self.yvel = -10
 
-                if xvel < 0:                      # если движется влево
-                    self.rect.left = p.rect.right # то не движется влево
+                    if xvel < 0:                      # если движется влево
+                        self.rect.left = p.rect.right # то не движется влево
+                        self.yvel = -10
 
-                if yvel > 0:                      # если падает вниз
-                    self.rect.bottom = p.rect.top # то не падает вниз
-                    self.onGround = True          # и становится на что-то твердое
-                    self.yvel = 0                 # и энергия падения пропадает
+                    if yvel > 0:                      # если падает вниз
+                        self.rect.bottom = p.rect.top # то не падает вниз
+                        self.onGround = True          # и становится на что-то твердое
+                        self.yvel = 0                 # и энергия падения пропадает
 
-                if yvel < 0:                      # если движется вверх
-                    self.rect.top = p.rect.bottom # то не движется вверх
-                    self.yvel = 0
+                    if yvel < 0:                      # если движется вверх
+                        self.rect.top = p.rect.bottom # то не движется вверх
+                        self.yvel = 0
 
-    def update(self,  heisx, heisy, platforms):
-        path = math.sqrt(math.pow((heisx-self.rect.x),2)+math.pow(heisy-self.rect.y,2))
+
+    def update(self,  heis_coord, objects):
+        if self.is_alive:
+            self.image.fill(Color(COLOR))
+            heisx = heis_coord.get('x')
+            heisy = heis_coord.get('y')
+            # self.xvel = 0
+            # self.yvel = 0
+
+
+            path = math.sqrt(math.pow((heisx-self.rect.x), 2)+math.pow(heisy-self.rect.y, 2))
+            # print path
+            directx = 1  # направление движения по x
+            directy = 1  # направление движения по y
+
+            if not self.onGround:
+                self.yvel += GRAVITY
+
+            self.onGround = False
+            self.rect.y += self.yvel
+            self.collide(0, self.yvel, objects)
+
+
+            if (path >= 50) and (path <300):
+                if heisx < self.rect.x:
+                    directx = -1
+                    self.boltAnimLeft.blit(self.image, (0, 0))
+                elif heisx > self.rect.x:
+                    directx = 1
+                    self.boltAnimRight.blit(self.image, (0, 0))
+                elif heisx == self.rect.x:
+                    directx = 0
+                    self.boltAnimRight.blit(self.image, (0, 0))
+
+                self.xvel = MOVE_SPEED * directx
+                self.rect.x += self.xvel
+                self.collide(self.xvel, 0, objects)
+            else:
+                self.boltAnimRight.blit(self.image, (0, 0))
+
+            pathy = math.fabs(heisy - self.rect.y)
+            if (heisy < self.rect.y) and (self.onGround) and (pathy > 100):
+                self.jump()
+
+    def get_status(self):
+        return self.is_alive
+
+    def jump(self):
+        self.yvel = -JUMP_POWER
+
+    def set_hit(self):
+        if self.is_alive:
+            if self.lifes > 1:
+                self.lifes -= 1
+                print 'Hit enemy!!!!'
+            else:
+                self.is_alive = False
+                print 'Enemy down!!'

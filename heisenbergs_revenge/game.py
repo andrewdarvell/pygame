@@ -5,6 +5,7 @@ import math
 import pygame
 import heisenberg
 import bullets
+import enemies
 from pygame import *
 from blocks import *
 
@@ -64,6 +65,7 @@ def load_level(path):
             if platforms_layer.content2D[col][row] is not None:
                 pf = Platform_sand(row * BLOCK_HEIGHT, col * BLOCK_WIDTH)# как и прежде создаем объкты класса Platform
                 platforms.append(pf)
+                all_objects.add(pf)
 
     monsters_layer = sprite_layers[2]
     for monster in monsters_layer.objects:
@@ -88,6 +90,14 @@ def main():
     renderer = helperspygame.RendererPygame() # визуализатор
     bg.fill(Color(BACKGROUND_COLOR))
 
+    bandit1 = enemies.Bandit(500, 640)
+    monsters.add(bandit1)
+    bandit2 = enemies.Bandit(550, 640)
+    monsters.add(bandit2)
+    bandit3 = enemies.Bandit(600, 640)
+    monsters.add(bandit3)
+    # entities.add(bandit1)
+    all_objects.add(monsters)
 
     timer = pygame.time.Clock()
     load_level('maps/map1.tmx')
@@ -105,7 +115,7 @@ def main():
         print (u"Не удалось на карте найти героя, взяты координаты по-умолчанию")
         hero = heisenberg.Heisenberg(65, 65)
     entities.add(hero)
-
+    all_objects.add(hero)
     while 1:
         timer.tick(60)
         for e in pygame.event.get(): # Обрабатываем события
@@ -140,6 +150,7 @@ def main():
                 # coords = {'x':164, 'y':512}
                 bullet = bullets.GunBullet(coords, hero.get_direction())
                 bullets_g.add(bullet)
+                all_objects.add(bullet)
 
 
         for sprite_layer in sprite_layers: # перебираем все слои
@@ -152,22 +163,31 @@ def main():
         for bullet in bullets_g:
             if bullet.get_status():
                 screen.blit(bullet.image, camera.apply(bullet))
+
+        for monster in monsters:
+            if monster.get_status():
+                screen.blit(monster.image, camera.apply(monster))
+
         # coords = hero.get_xy()
         # path = math.sqrt(math.pow((playerX-coords.get('x')), 2)+math.pow(playerY-coords.get('y'), 2))
         # print path
         center_offset = camera.reverse(CENTER_OF_SCREEN)
         camera.update(hero)
-        bullets_g.update(platforms)
+        bullets_g.update(all_objects)
 
 
         renderer.set_camera_position_and_size(center_offset[0], center_offset[1], WIN_WIDTH, WIN_HEIGHT, "center")
         hero.update(left, right, up, platforms) # передвижение
-
+        monsters.update(hero.get_xy(), all_objects)
         pygame.display.update()     # обновление и вывод всех изменений на экран
         screen.blit(bg, (0, 0))      # Каждую итерацию необход
 
-entities = pygame.sprite.Group() # Все объекты
+        # print hero.get_xy()
+
+entities = pygame.sprite.Group()
+all_objects = pygame.sprite.Group()  # Все объекты
 bullets_g = pygame.sprite.Group()
+monsters = pygame.sprite.Group()
 platforms = []
 if __name__ == "__main__":
     main()
